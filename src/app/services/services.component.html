@@ -1,0 +1,76 @@
+<div class="container fade-in">
+  <h2 class="mb-4">Services Management</h2>
+
+  <div class="row">
+    <!-- Services List -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Clinic Services Menu</h5>
+          <input type="text" class="form-control form-control-sm w-50" 
+                 placeholder="Search service..." [(ngModel)]="searchText" (input)="filterServices()">
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Fee</th>
+                <th>CPT Code</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of filteredServices">
+                <td>{{ s.serviceID }}</td>
+                <td>{{ s.serviceName }}</td>
+                <td>{{ s.fee | currency }}</td>
+                <td><span class="badge bg-secondary">{{ s.cptCode }}</span></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-warning me-2" (click)="editService(s)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteService(s.serviceID)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Form -->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header text-white" [ngClass]="currentService.serviceID === 0 ? 'bg-info' : 'bg-warning'">
+          <h5 class="mb-0">{{ currentService.serviceID === 0 ? 'Add New Service' : 'Edit Service' }}</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="saveService()">
+            <div class="mb-3">
+              <label class="form-label">Service Name</label>
+              <input type="text" class="form-control" [(ngModel)]="currentService.serviceName" name="serviceName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Fee ($)</label>
+              <input type="number" class="form-control" [(ngModel)]="currentService.fee" name="fee" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">CPT Code</label>
+              <select class="form-select" [(ngModel)]="currentService.cptCode" name="cptCode" required>
+                <option value="" disabled>Select CPT...</option>
+                <option *ngFor="let c of cptCodes" [value]="c.cptCode">
+                  {{ c.cptCode }} - {{ c.category }}
+                </option>
+              </select>
+            </div>
+            
+            <button type="submit" class="btn w-100 mb-2" [ngClass]="currentService.serviceID === 0 ? 'btn-info text-white' : 'btn-warning'">
+              {{ currentService.serviceID === 0 ? 'Save Service' : 'Update Changes' }}
+            </button>
+            <button *ngIf="currentService.serviceID !== 0" type="button" class="btn btn-secondary w-100" (click)="resetForm()">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

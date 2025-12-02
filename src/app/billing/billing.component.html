@@ -1,0 +1,89 @@
+<div class="container fade-in">
+  <h2 class="mb-4">Billing Portal</h2>
+
+  <div class="row">
+    <!-- Form -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header text-white" [ngClass]="currentEvent.eventID === 0 ? 'bg-success' : 'bg-warning'">
+          <h5 class="mb-0">{{ currentEvent.eventID === 0 ? 'Log New Service' : 'Edit Transaction' }}</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="saveEvent()">
+            
+            <div class="mb-3">
+              <label class="form-label">Provider</label>
+              <select class="form-select" [(ngModel)]="currentEvent.providerID" name="providerID" required>
+                <option [ngValue]="null" disabled>Select Doctor...</option>
+                <option *ngFor="let p of providers" [value]="p.providerID">
+                  {{ p.firstName }} {{ p.lastName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Service</label>
+              <select class="form-select" [(ngModel)]="currentEvent.serviceID" name="serviceID" (change)="onServiceChange()" required>
+                <option [ngValue]="null" disabled>Select Service...</option>
+                <option *ngFor="let s of services" [value]="s.serviceID">
+                  {{ s.serviceName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-control" [(ngModel)]="currentEvent.dateOfService" name="dateOfService" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Amount ($)</label>
+              <input type="number" class="form-control" [(ngModel)]="currentEvent.billedAmount" name="billedAmount" readonly>
+            </div>
+
+            <button type="submit" class="btn w-100 mb-2" [ngClass]="currentEvent.eventID === 0 ? 'btn-success' : 'btn-warning'">
+                {{ currentEvent.eventID === 0 ? 'Submit Bill' : 'Update Bill' }}
+            </button>
+            <button *ngIf="currentEvent.eventID !== 0" type="button" class="btn btn-secondary w-100" (click)="resetForm()">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Billing History</h5>
+          <input type="text" class="form-control form-control-sm w-50" 
+                 placeholder="Search by Doctor, Service, or Date..." [(ngModel)]="searchText" (input)="filterEvents()">
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Provider</th>
+                <th>Service</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of filteredEvents">
+                <td>{{ e.dateOfService | date:'shortDate' }}</td>
+                <td>{{ getProviderName(e.providerID) }}</td>
+                <td>{{ getServiceName(e.serviceID) }}</td>
+                <td class="fw-bold text-success">{{ e.billedAmount | currency }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-warning me-2" (click)="editEvent(e)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteEvent(e.eventID)">Void</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
