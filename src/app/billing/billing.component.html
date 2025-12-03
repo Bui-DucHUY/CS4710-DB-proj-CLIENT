@@ -2,7 +2,7 @@
   <h2 class="mb-4">Billing Portal</h2>
 
   <div class="row">
-    <!-- Form -->
+    <!-- Form (Left Side) -->
     <div class="col-md-4">
       <div class="card shadow-sm mb-4">
         <div class="card-header text-white" [ngClass]="currentEvent.eventID === 0 ? 'bg-success' : 'bg-warning'">
@@ -13,22 +13,32 @@
             
             <div class="mb-3">
               <label class="form-label">Provider</label>
-              <select class="form-select" [(ngModel)]="currentEvent.providerID" name="providerID" required>
-                <option [ngValue]="null" disabled>Select Doctor...</option>
-                <option *ngFor="let p of providers" [value]="p.providerID">
-                  {{ p.firstName }} {{ p.lastName }}
+              <input class="form-control" list="providerOptions" 
+                     [(ngModel)]="providerNameInput" 
+                     (change)="onProviderSelect()" 
+                     name="providerName" 
+                     placeholder="Type to search..." 
+                     required autocomplete="off">
+              <datalist id="providerOptions">
+                <option *ngFor="let p of availableProviders" [value]="p.firstName + ' ' + p.lastName">
+                  ID: {{ p.providerID }} — {{ p.specialty }}
                 </option>
-              </select>
+              </datalist>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Service</label>
-              <select class="form-select" [(ngModel)]="currentEvent.serviceID" name="serviceID" (change)="onServiceChange()" required>
-                <option [ngValue]="null" disabled>Select Service...</option>
-                <option *ngFor="let s of services" [value]="s.serviceID">
-                  {{ s.serviceName }}
+              <input class="form-control" list="serviceOptions" 
+                     [(ngModel)]="serviceNameInput" 
+                     (change)="onServiceSelect()" 
+                     name="serviceName" 
+                     placeholder="Type to search..." 
+                     required autocomplete="off">
+              <datalist id="serviceOptions">
+                <option *ngFor="let s of availableServices" [value]="s.serviceName">
+                  ID: {{ s.serviceID }} — {{ s.fee | currency }}
                 </option>
-              </select>
+              </datalist>
             </div>
 
             <div class="mb-3">
@@ -50,14 +60,18 @@
       </div>
     </div>
 
-    <!-- History Table -->
+    <!-- History Table (Right Side) -->
     <div class="col-md-8">
       <div class="card shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Billing History</h5>
+          <!-- SEARCH INPUT: Triggers onSearchInput -->
           <input type="text" class="form-control form-control-sm w-50" 
-                 placeholder="Search by Doctor, Service, or Date..." [(ngModel)]="searchText" (input)="filterEvents()">
+                 placeholder="Search by Doctor, Service, or ID..." 
+                 [ngModel]="searchText" 
+                 (input)="onSearchInput($any($event.target).value)">
         </div>
+        
         <div class="card-body p-0">
           <table class="table table-hover mb-0">
             <thead class="table-light">
@@ -70,7 +84,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let e of filteredEvents">
+              <tr *ngFor="let e of billedEvents">
                 <td>{{ e.dateOfService | date:'shortDate' }}</td>
                 <td>{{ getProviderName(e.providerID) }}</td>
                 <td>{{ getServiceName(e.serviceID) }}</td>
@@ -80,9 +94,35 @@
                   <button class="btn btn-sm btn-outline-danger" (click)="deleteEvent(e.eventID)">Void</button>
                 </td>
               </tr>
+              <tr *ngIf="billedEvents.length === 0">
+                <td colspan="5" class="text-center text-muted py-4">No records found.</td>
+              </tr>
             </tbody>
           </table>
         </div>
+
+        <!-- PAGINATION FOOTER -->
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          <span class="text-muted small">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - 
+            {{ (currentPage * pageSize) > totalItems ? totalItems : (currentPage * pageSize) }} 
+            of {{ totalItems }} records
+          </span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
+              </li>
+              <li class="page-item disabled">
+                <span class="page-link text-dark">Page {{ currentPage }} of {{ totalPages }}</span>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
       </div>
     </div>
   </div>

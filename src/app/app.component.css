@@ -1,0 +1,18 @@
+/* Navigation Active State */
+.navbar-nav .nav-link.active {
+    font-weight: bold !important;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    color: white !important; /* Ensure it stays white */
+    opacity: 1;
+}
+
+/* Optional: Hover effect */
+.navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Smooth transition for the color change */
+.navbar {
+    transition: background 0.5s ease-in-out;
+}

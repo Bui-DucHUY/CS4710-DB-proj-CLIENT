@@ -16,6 +16,13 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/Providers`);
   }
 
+  // NEW: Search Providers
+  searchProviders(term: string, page: number, pageSize: number): Observable<any> {
+    let params = `?page=${page}&pageSize=${pageSize}`;
+    if (term) params += `&term=${encodeURIComponent(term)}`;
+    return this.http.get<any>(`${this.baseUrl}/Providers/search${params}`);
+  }
+
   addProvider(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/Providers`, data);
   }
@@ -28,9 +35,25 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/Providers/${id}`);
   }
 
+  // --- CAPABILITIES (New) ---
+  getAllCapabilities(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/Providers/capabilities`);
+  }
+
+  updateProviderCapabilities(providerId: number, serviceIds: number[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/Providers/${providerId}/capabilities`, serviceIds);
+  }
+
   // --- SERVICES ---
   getServices(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/ClinicServices`);
+  }
+
+  // NEW: Search Services
+  searchServices(term: string, page: number, pageSize: number): Observable<any> {
+    let params = `?page=${page}&pageSize=${pageSize}`;
+    if (term) params += `&term=${encodeURIComponent(term)}`;
+    return this.http.get<any>(`${this.baseUrl}/ClinicServices/search${params}`);
   }
 
   addService(data: any): Observable<any> {
@@ -48,6 +71,12 @@ export class ApiService {
   // --- BILLING ---
   getBilledEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/BilledEvents`);
+  }
+
+  searchBilledEvents(term: string, page: number, pageSize: number): Observable<any> {
+    let params = `?page=${page}&pageSize=${pageSize}`;
+    if (term) params += `&term=${encodeURIComponent(term)}`;
+    return this.http.get<any>(`${this.baseUrl}/BilledEvents/search${params}`);
   }
 
   logEvent(data: any): Observable<any> {

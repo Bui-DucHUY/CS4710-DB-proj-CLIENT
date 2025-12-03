@@ -1,11 +1,16 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm" 
+     [style.background]="navbarStyle" 
+     style="transition: background 0.5s ease;">
+  
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">CPT Analyzer</a>
+    <a class="navbar-brand fw-bold" href="#">Clinic Utility</a>
+    
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav ms-auto text-uppercase">
         <li class="nav-item">
           <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </li>
@@ -18,7 +23,12 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/billing" routerLinkActive="active">Billing</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/analytics" routerLinkActive="active">Analytics</a>
+        </li>
       </ul>
+      
+      
     </div>
   </div>
 </nav>

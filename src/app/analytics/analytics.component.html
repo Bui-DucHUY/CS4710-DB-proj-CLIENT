@@ -1,0 +1,64 @@
+<div class="container fade-in">
+  <h2 class="mb-4">Advanced Analytics & BI</h2>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Service Performance Trends</h5>
+      <div class="d-flex gap-2">
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="startDate">
+        <span class="align-self-center">-</span>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="endDate">
+        <button class="btn btn-sm btn-primary" (click)="loadTrends()">Filter</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="height: 400px; display: block;">
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          [type]="barChartType"> 
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm border-info">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">Service Suggester</h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">
+            Identifies services frequently performed together.
+          </p>
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Service A</th>
+                <th>Service B</th>
+                <th>Frequency</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of suggestions">
+                <td class="fw-bold">{{ s.ServiceA || s.serviceA }}</td>
+                <td>{{ s.ServiceB || s.serviceB }}</td>
+                <td><span class="badge bg-warning text-dark">{{ s.Frequency || s.frequency }} times</span></td>
+                <td>
+                  Bundle 
+                  <span class="text-primary fw-bold">{{ s.ServiceA || s.serviceA }}</span> & 
+                  <span class="text-primary fw-bold">{{ s.ServiceB || s.serviceB }}</span>.
+                </td>
+              </tr>
+              <tr *ngIf="suggestions.length === 0">
+                <td colspan="4" class="text-center text-muted py-3">No patterns found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

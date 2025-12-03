@@ -7,12 +7,12 @@
       <div class="card shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Medical Staff Directory</h5>
-          <!-- Search Bar -->
+          <!-- Server-Side Search -->
           <input type="text" 
                  class="form-control form-control-sm w-50" 
                  placeholder="Search by name or specialty..." 
-                 [(ngModel)]="searchText" 
-                 (input)="filterProviders()">
+                 [ngModel]="searchText" 
+                 (input)="onSearchInput($any($event.target).value)">
         </div>
         <div class="card-body p-0">
           <table class="table table-striped table-hover mb-0">
@@ -26,36 +26,51 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Use filteredProviders instead of providers -->
-              <tr *ngFor="let p of filteredProviders">
+              <tr *ngFor="let p of providers">
                 <td>{{ p.providerID }}</td>
                 <td>{{ p.firstName }} {{ p.lastName }}</td>
                 <td><span class="badge bg-info text-dark">{{ p.specialty }}</span></td>
                 <td>{{ p.addrss }}</td>
                 <td>
-                  <!-- Edit Button -->
-                  <button class="btn btn-sm btn-outline-warning me-2" (click)="editProvider(p)">
-                    Edit
-                  </button>
-                  <!-- Delete Button -->
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProvider(p.providerID)">
-                    Delete
-                  </button>
+                  <button class="btn btn-sm btn-outline-warning me-2" (click)="editProvider(p)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProvider(p.providerID)">Delete</button>
                 </td>
               </tr>
-              <tr *ngIf="filteredProviders.length === 0">
+              <tr *ngIf="providers.length === 0">
                 <td colspan="5" class="text-center text-muted py-4">No matching providers found.</td>
               </tr>
             </tbody>
           </table>
         </div>
+        
+        <!-- Pagination Footer -->
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          <span class="text-muted small">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - 
+            {{ (currentPage * pageSize) > totalItems ? totalItems : (currentPage * pageSize) }} 
+            of {{ totalItems }} records
+          </span>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
+              </li>
+              <li class="page-item disabled">
+                <span class="page-link text-dark">Page {{ currentPage }} of {{ totalPages }}</span>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
       </div>
     </div>
 
     <!-- Add/Edit Form -->
     <div class="col-md-4">
       <div class="card shadow-sm">
-        <!-- Dynamic Header Color -->
         <div class="card-header text-white" 
              [ngClass]="currentProvider.providerID === 0 ? 'bg-primary' : 'bg-warning'">
           <h5 class="mb-0">
@@ -81,18 +96,28 @@
               <input type="text" class="form-control" [(ngModel)]="currentProvider.addrss" name="addrss">
             </div>
             
+            <!-- Capabilities Checklist -->
+            <div class="mb-3">
+              <label class="form-label">Authorized Services</label>
+              <div class="card p-2" style="max-height: 200px; overflow-y: auto;">
+                <div class="form-check" *ngFor="let s of services">
+                  <input class="form-check-input" type="checkbox" 
+                         [value]="s.serviceID" 
+                         [checked]="selectedServiceIds.includes(s.serviceID)"
+                         (change)="toggleService(s.serviceID, $event)">
+                  <label class="form-check-label small">
+                    {{ s.serviceName }} ({{ s.fee | currency }})
+                  </label>
+                </div>
+              </div>
+              <div class="form-text text-muted">Select services this provider can perform.</div>
+            </div>
+
             <button type="submit" class="btn w-100 mb-2"
                     [ngClass]="currentProvider.providerID === 0 ? 'btn-primary' : 'btn-warning'">
               {{ currentProvider.providerID === 0 ? 'Save Provider' : 'Update Changes' }}
             </button>
-
-            <!-- Cancel Button (Only show when editing) -->
-            <button *ngIf="currentProvider.providerID !== 0" 
-                    type="button" 
-                    class="btn btn-secondary w-100" 
-                    (click)="resetForm()">
-              Cancel Edit
-            </button>
+            <button *ngIf="currentProvider.providerID !== 0" type="button" class="btn btn-secondary w-100" (click)="resetForm()">Cancel Edit</button>
           </form>
         </div>
       </div>

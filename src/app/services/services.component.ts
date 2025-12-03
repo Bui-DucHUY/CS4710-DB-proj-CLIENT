@@ -2,6 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-services',
@@ -13,19 +15,32 @@ import { ApiService } from '../services/api.service';
 export class ServicesComponent implements OnInit {
   
   services: any[] = [];
-  filteredServices: any[] = [];
   cptCodes: any[] = [];
+  
+  // PAGINATION & SEARCH
+  totalItems: number = 0;
+  currentPage: number = 1;
+  pageSize: number = 10;
   searchText: string = '';
+  private searchSubject = new Subject<string>();
 
-  // Form Model
-  currentService: any = {
-    serviceID: 0, // 0 = New
+  newService = {
+    serviceID: 0,
     serviceName: '',
     fee: 0,
     cptCode: ''
   };
 
-  constructor(@Inject(ApiService) private api: ApiService) {}
+  constructor(@Inject(ApiService) private api: ApiService) {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchText = term;
+      this.currentPage = 1;
+      this.loadServices();
+    });
+  }
 
   ngOnInit(): void {
     this.loadServices();
@@ -33,50 +48,59 @@ export class ServicesComponent implements OnInit {
   }
 
   loadServices() {
-    this.api.getServices().subscribe((data: any[]) => {
-      this.services = data;
-      this.filterServices();
-    });
+    this.api.searchServices(this.searchText, this.currentPage, this.pageSize)
+      .subscribe((res: any) => {
+        this.services = res.data;
+        this.totalItems = res.totalCount;
+      });
   }
 
   loadCptCodes() {
-    this.api.getCptCodes().subscribe((data: any[]) => this.cptCodes = data);
+    this.api.getCptCodes().subscribe((data: any[]) => {
+      this.cptCodes = data.map(c => ({
+        cptCode: c.cptCode || c.CPTCode || c.cptcode, 
+        descript: c.descript || c.Descript || 'No Description', 
+        category: c.category || c.Category || 'General'
+      }));
+    });
   }
 
-  filterServices() {
-    if (!this.searchText) {
-      this.filteredServices = this.services;
-    } else {
-      const term = this.searchText.toLowerCase().trim();
-      this.filteredServices = this.services.filter(s => 
-        (s.serviceName || '').toLowerCase().includes(term) || 
-        (s.cptCode || '').toLowerCase().includes(term) ||
-        (s.fee || 0).toString().includes(term)
-      );
+  onSearchInput(term: string) {
+    this.searchSubject.next(term);
+  }
+
+  changePage(newPage: number) {
+    if (newPage >= 1 && newPage <= this.totalPages) {
+      this.currentPage = newPage;
+      this.loadServices();
     }
   }
 
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
+  }
+
   editService(service: any) {
-    this.currentService = { ...service };
+    this.newService = { ...service };
   }
 
   resetForm() {
-    this.currentService = { serviceID: 0, serviceName: '', fee: 0, cptCode: '' };
+    this.newService = { serviceID: 0, serviceName: '', fee: 0, cptCode: '' };
   }
 
   saveService() {
-    if (!this.currentService.serviceName || !this.currentService.cptCode) {
+    if (!this.newService.serviceName || !this.newService.cptCode) {
       alert('Name and CPT Code are required!');
       return;
     }
 
-    if (this.currentService.serviceID === 0) {
-      this.api.addService(this.currentService).subscribe(() => {
+    if (this.newService.serviceID === 0) {
+      this.api.addService(this.newService).subscribe(() => {
         this.loadServices();
         this.resetForm();
       });
     } else {
-      this.api.updateService(this.currentService.serviceID, this.currentService).subscribe(() => {
+      this.api.updateService(this.newService.serviceID, this.newService).subscribe(() => {
         this.loadServices();
         this.resetForm();
       });

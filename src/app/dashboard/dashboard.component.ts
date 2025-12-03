@@ -2,7 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
-// FIX: Removed .ts extension and points to src/app/services/api.service
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -47,19 +46,28 @@ export class DashboardComponent implements OnInit {
   loadStats() {
     this.api.getProviders().subscribe((data: any[]) => this.totalProviders = data.length);
     this.api.getServices().subscribe((data: any[]) => this.totalServices = data.length);
+
     this.api.getBilledEvents().subscribe((data: any[]) => {
-      this.totalRevenue = data.reduce((sum: number, item: any) => sum + item.billedAmount, 0);
+      // FIX: Check for BilledAmount (PascalCase) or billedAmount (camelCase)
+      this.totalRevenue = data.reduce((sum: number, item: any) => 
+        sum + (item.BilledAmount || item.billedAmount || 0), 0);
     });
   }
 
   loadTrends() {
-    const start = '2023-01-01';
-    const end = '2025-12-31';
+    const start = '2024-01-01';
+    const end = '2024-12-31';
 
     this.api.getTrends(start, end).subscribe((data: any[]) => {
-      this.lineChartData.labels = data.map((item: any) => item.serviceName);
-      this.lineChartData.datasets[0].data = data.map((item: any) => item.totalRevenue);
-      this.lineChartData = { ...this.lineChartData };
+      if (data && data.length > 0) {
+        // FIX: Use PascalCase to match SQL result
+        this.lineChartData.labels = data.map((item: any) => item.ServiceName || item.serviceName);
+        
+        this.lineChartData.datasets[0].data = data.map((item: any) => item.TotalRevenue || item.totalRevenue);
+        
+        // Trigger update
+        this.lineChartData = { ...this.lineChartData };
+      }
     });
   }
 }
