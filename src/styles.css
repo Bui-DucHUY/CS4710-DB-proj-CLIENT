@@ -27,20 +27,17 @@ body {
     transition: background 0.5s ease-in-out;
 }
 
-/* --- COLOR OVERRIDES --- */
+/* --- COLOR OVERRIDES because bootstrap schemes are horrible --- */
 
 :root {
-    /* Override standard Bootstrap Warning (Yellow) to a darker Orange-Gold */
     --bs-warning: #ff9800; 
     --bs-warning-rgb: 255, 152, 0;
 }
 
-/* Make 'text-warning' much darker for readability on white backgrounds */
 .text-warning {
-    color: #d35400 !important; /* Burnt Orange */
+    color: #d35400 !important;
 }
 
-/* Ensure buttons keep black text (High Contrast) */
 .btn-warning {
     color: #000 !important;
     background-color: #ff9800 !important;
@@ -52,7 +49,6 @@ body {
     border-color: #d97906 !important;
 }
 
-/* Fix outline buttons to use the darker orange */
 .btn-outline-warning {
     color: #d35400 !important;
     border-color: #d35400 !important;

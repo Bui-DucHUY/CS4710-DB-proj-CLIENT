@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
     datasets: [
       {
         data: [],
-        label: 'Revenue Trends',
+        label: 'Revenue ($)',
         fill: true,
         tension: 0.5,
         borderColor: '#0d6efd',
@@ -48,7 +48,6 @@ export class DashboardComponent implements OnInit {
     this.api.getServices().subscribe((data: any[]) => this.totalServices = data.length);
 
     this.api.getBilledEvents().subscribe((data: any[]) => {
-      // FIX: Check for BilledAmount (PascalCase) or billedAmount (camelCase)
       this.totalRevenue = data.reduce((sum: number, item: any) => 
         sum + (item.BilledAmount || item.billedAmount || 0), 0);
     });
@@ -60,7 +59,6 @@ export class DashboardComponent implements OnInit {
 
     this.api.getTrends(start, end).subscribe((data: any[]) => {
       if (data && data.length > 0) {
-        // FIX: Use PascalCase to match SQL result
         this.lineChartData.labels = data.map((item: any) => item.ServiceName || item.serviceName);
         
         this.lineChartData.datasets[0].data = data.map((item: any) => item.TotalRevenue || item.totalRevenue);

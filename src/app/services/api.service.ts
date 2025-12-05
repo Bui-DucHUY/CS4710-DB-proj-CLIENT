@@ -11,12 +11,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  // --- PROVIDERS ---
   getProviders(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/Providers`);
   }
 
-  // NEW: Search Providers
   searchProviders(term: string, page: number, pageSize: number): Observable<any> {
     let params = `?page=${page}&pageSize=${pageSize}`;
     if (term) params += `&term=${encodeURIComponent(term)}`;
@@ -35,7 +33,6 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/Providers/${id}`);
   }
 
-  // --- CAPABILITIES (New) ---
   getAllCapabilities(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/Providers/capabilities`);
   }
@@ -44,12 +41,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/Providers/${providerId}/capabilities`, serviceIds);
   }
 
-  // --- SERVICES ---
   getServices(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/ClinicServices`);
   }
 
-  // NEW: Search Services
   searchServices(term: string, page: number, pageSize: number): Observable<any> {
     let params = `?page=${page}&pageSize=${pageSize}`;
     if (term) params += `&term=${encodeURIComponent(term)}`;
@@ -68,7 +63,6 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/ClinicServices/${id}`);
   }
 
-  // --- BILLING ---
   getBilledEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/BilledEvents`);
   }
@@ -91,7 +85,6 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/BilledEvents/${id}`);
   }
 
-  // --- ANALYTICS ---
   getTrends(start: string, end: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/Analytics/trends?startDate=${start}&endDate=${end}`);
   }

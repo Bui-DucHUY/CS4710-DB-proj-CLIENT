@@ -46,7 +46,6 @@ export class BillingComponent implements OnInit {
   };
 
   constructor(@Inject(ApiService) private api: ApiService) {
-    // Setup Debounce: Wait 300ms after user stops typing to trigger search
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged()
@@ -80,10 +79,8 @@ export class BillingComponent implements OnInit {
   }
 
   loadHistory() {
-    // Calls the SERVER-SIDE search endpoint
     this.api.searchBilledEvents(this.searchText, this.currentPage, this.pageSize)
       .subscribe((response: any) => {
-        // Normalize IDs in the response
         this.billedEvents = response.data.map((e: any) => ({
           ...e,
           eventID: e.eventID || e.EventID,
@@ -96,12 +93,10 @@ export class BillingComponent implements OnInit {
       });
   }
 
-  // Triggered by the HTML input
   onSearchInput(term: string) {
     this.searchSubject.next(term);
   }
 
-  // Pagination Controls
   changePage(newPage: number) {
     if (newPage >= 1 && newPage <= this.totalPages) {
       this.currentPage = newPage;
@@ -124,7 +119,6 @@ export class BillingComponent implements OnInit {
     return s ? s.serviceName : 'Loading...';
   }
 
-  // --- DEPENDENT DROPDOWN LOGIC ---
   onProviderSelect() {
     const selectedP = this.providers.find(p => `${p.firstName} ${p.lastName}` === this.providerNameInput);
     if (selectedP) {

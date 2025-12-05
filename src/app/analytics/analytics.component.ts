@@ -19,11 +19,8 @@ export class AnalyticsComponent implements OnInit {
   startDate: string = '2024-01-01';
   endDate: string = '2024-12-31';
 
-  // FIX 1: Explicitly define the allowed types as 'bar' | 'line'
-  // This prevents the error: Type 'keyof ChartTypeRegistry' is not assignable to type '"bar"'
   public barChartType: 'bar' | 'line' = 'bar';
 
-  // FIX 2: Ensure Data configuration allows both types
   public barChartData: ChartConfiguration<'bar' | 'line'>['data'] = {
     labels: [],
     datasets: [
@@ -48,7 +45,6 @@ export class AnalyticsComponent implements OnInit {
     ]
   };
 
-  // FIX 3: Update Options to match the 'bar' | 'line' union type
   public barChartOptions: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -77,7 +73,7 @@ export class AnalyticsComponent implements OnInit {
           text: 'Count'
         },
         grid: {
-          drawOnChartArea: false // Removes grid lines for the right axis to look cleaner
+          drawOnChartArea: false // Removes grid lines
         }
       }
     }
@@ -94,7 +90,6 @@ export class AnalyticsComponent implements OnInit {
   loadTrends() {
     this.api.getTrends(this.startDate, this.endDate).subscribe((data: any[]) => {
       if (data && data.length > 0) {
-        // Use PascalCase to match Dapper/SQL result if needed (TotalRevenue, etc.)
         this.barChartData.labels = data.map((item: any) => item.ServiceName || item.serviceName);
         
         this.barChartData.datasets[0].data = data.map((item: any) => item.TotalRevenue || item.totalRevenue);
