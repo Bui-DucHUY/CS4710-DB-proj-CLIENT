@@ -1,6 +1,6 @@
 # CS4710-DB-proj-CLIENT
 
-This repository contains the frontend client for the CS4710 Database Project. The application is developed using [Angular](https://angular.io/) and serves as the user interface for interacting with the backend database system.
+This repository contains the frontend client for the CSC 4710 Database Project. The application is developed using [Angular](https://angular.io/) and serves as the user interface for interacting with the backend database system.
 
 ## Table of Contents
 
@@ -82,7 +82,3 @@ Contributions are welcome! Please open an issue or submit a pull request for imp
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-**Questions or feedback?** Please create an issue in the repository.
