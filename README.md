@@ -13,7 +13,7 @@ This repository contains the frontend client for the CSC 4710 Database Project. 
 
 ## Overview
 
-**CS4710-DB-proj-CLIENT** provides a web-based interface for users to interact with the database project as part of the CS4710 course. It communicates with the backend API, allowing users to perform actions such as viewing, adding, updating, and deleting records.
+**CS4710-DB-proj-CLIENT** provides a web-based interface for users to interact with the database project as part of the CSC 4710 course. It communicates with the backend API, allowing users to perform actions such as viewing, adding, updating, and deleting records.
 
 ## Features
 
